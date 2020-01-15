@@ -28,9 +28,18 @@ def __get_xgb_model():
                 subsample=0.9379749659257777,
                 eta=0.006468846947776807,
                 reg_lambda=0.0017145976534277546,
-                thread=multiprocessing.cpu_count()*4,
-                min_child_weight=float(1.0800292877514307e-05)
+#                 thread=multiprocessing.cpu_count()*4,
+                min_child_weight=float(1.0800292877514307e-05),
+#                 gpu_id=0,
+#                 tree_method='gpu_hist'                
     )
+    return model
+
+
+def train_model_all_data(_stock_num, _train_set):
+    train_x, train_y = _train_set.iloc[:, :-1], _train_set.iloc[:, -1]
+    model = __get_xgb_model()
+    model.fit(train_x, train_y)
     return model
 
 
@@ -63,7 +72,7 @@ def evaluate_model(trained_model, _stock_num, _eval_set, threshold=0.70):
                 buy_count += 1
                 if np.array(eval_y)[i] == 3:
                     true_buy_count += 1
-    accuracy_eval = true_buy_count / buy_count
+    accuracy_eval = correct_count / total_count
     buy_percent = true_buy_count / len(eval_y)
     return accuracy_eval, buy_percent
 

@@ -5,8 +5,12 @@ import requests
 from utils import utils
 
 
+CONFIG_STOCK_SECTION = 'Stock'
+CONFIG_OPTION_KOSPI_LIST = 'kospi_list'
+
 mStock_num_dic = {}
 mStock_name_dic = {}
+mStock_in_kospi = []
 
 
 def __get_dic_data_path():
@@ -16,21 +20,39 @@ def __get_dic_data_path():
     return paths
 
 
-DIC_NAME_FILE = __get_dic_data_path() + utils.get_today() + '_stock_name_dic.csv'
-DIC_NUM_FILE = __get_dic_data_path() + utils.get_today() + '_stock_num_dic.csv'
+DIC_NAME_FILE = __get_dic_data_path() + utils.get_this_month() + '_stock_name_dic.csv'
+DIC_NUM_FILE = __get_dic_data_path() + utils.get_this_month() + '_stock_num_dic.csv'
+
+
+def __set_stock_num_in_kospi():
+    global mStock_in_kospi
+    
+    stock_list = ' ,'.join(mStock_in_kospi)
+    utils.set_config_value(CONFIG_STOCK_SECTION, CONFIG_OPTION_KOSPI_LIST, stock_list)
+
+
+def __get_stock_num_in_kospi():
+    global mStock_in_kospi
+    
+    stock_list = utils.get_config_value(CONFIG_STOCK_SECTION, CONFIG_OPTION_KOSPI_LIST)
+    if stock_list == 0:
+        __parse_stock_dictionary()
+    else:
+        mStock_in_kospi = stock_list.split(' ,')
 
 
 def __parse_stock_dictionary():
     global mStock_num_dic
     global mStock_name_dic
+    global mStock_in_kospi
 
     base_url_kospi = 'https://finance.naver.com/sise/sise_market_sum.nhn?sosok=0&page='
     base_url_kosdaq = 'https://finance.naver.com/sise/sise_market_sum.nhn?sosok=1&page='
 
     mStock_num_dic = {}
     mStock_name_dic = {}
-    for base_url in [base_url_kospi, base_url_kosdaq]:
-        for i in range(1, 6):
+    for idx, base_url in enumerate([base_url_kospi, base_url_kosdaq]):
+        for i in range(1, 3):
             url = base_url + str(i)
             r = requests.get(url)
 
@@ -44,6 +66,9 @@ def __parse_stock_dictionary():
                     name = item.find_all('a', {'class': 'tltle'})[0].text
                     mStock_num_dic[code] = name
                     mStock_name_dic[name] = code
+                    if idx == 0:
+                        mStock_in_kospi.append(name)
+    __set_stock_num_in_kospi()
     utils.write_dictionary_to_csv(mStock_name_dic, DIC_NAME_FILE)
     utils.write_dictionary_to_csv(mStock_num_dic, DIC_NUM_FILE)
 
@@ -69,6 +94,14 @@ def __parse_stock_dictionary():
 #     except IOError:
 #         print('except')
 #     return stock_dict
+
+
+def get_kospi_list():
+    global mStock_in_kospi
+    
+    if len(mStock_in_kospi) < 10:
+        __get_stock_num_in_kospi()
+    return mStock_in_kospi
 
 
 def get_stock_num_list(update=False):
@@ -99,12 +132,19 @@ def get_stock_name_to_num(_stock_name):
         __parse_stock_dictionary()
     return mStock_name_dic[_stock_name]
 
-
 # def get_chart_data_path():
 #     paths = os.getcwd() + '/data/chart_data/'
 #     if not os.path.exists(paths):
 #         os.makedirs(paths)
 #     return paths
+
+# def __remove_legacy_file(_stock_list):
+
+
+
+
+
+
 
 
 
