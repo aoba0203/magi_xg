@@ -78,13 +78,19 @@ def read_dictionary_to_csv(csv_file_name):
     return stock_dict
 
 
+def get_project_path():
+    return Path(os.getcwd()).parent
+
+
 def get_pred_data_path():
-    paths = os.getcwd() + '/result/pred_data/'
+    paths = get_project_path() + '/result/pred_data/'
     if not os.path.exists(paths):
         os.makedirs(paths)
     return paths
 
 
-def get_project_path():
-    return Path(os.getcwd()).parent
-
+def get_pred_model_path():
+    paths = get_project_path() + '/result/pred_model/'
+    if not os.path.exists(paths):
+        os.makedirs(paths)
+    return paths
