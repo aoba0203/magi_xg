@@ -23,6 +23,10 @@ def get_model_data_path():
     return paths
 
 
+def get_model_name_path(_stock_num):
+    return get_model_data_path() + _stock_num + '.joblib'
+
+
 def get_temp_data_path():
     paths = utils.get_project_path() + '/data/temp_data/'
     if not os.path.exists(paths):

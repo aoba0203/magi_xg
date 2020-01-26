@@ -58,4 +58,5 @@ def update_raw_file():
             print('not in stock_list: ' + str(stock_num))
 
 
-
+def get_data_at_day(_stock_num, _day):
+    return DatasetGenerator.get_data_at_day(_stock_num, _day)

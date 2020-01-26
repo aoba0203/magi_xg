@@ -113,7 +113,7 @@ def __get_dataframe_all(_stock_num):
     __set_extra_info(df_ori)
     __set_mv_grad(df_ori)
     df_ori = __set_period_max(df_ori)
-    value_range = __get_value_range(df_ori)
+    # value_range = __get_value_range(df_ori)
     df_ori, df_y = __set_predict_category(df_ori)
     df_ori = __drop_columns(df_ori)
     df_indexs = df_ori.index.copy()
@@ -140,3 +140,6 @@ def get_stock_info_all(_stock_num):
     return df_dataset
 
 
+def get_data_at_day(_stock_num, day):
+    df = pd.read_csv(DataUtils.get_xg_data_path() + _stock_num + '.csv', index_col=0)
+    return df.loc[day]

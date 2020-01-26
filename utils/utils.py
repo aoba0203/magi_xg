@@ -3,6 +3,7 @@ import configparser
 import csv
 from pathlib import Path
 import os
+import rootpath
 
 
 CONFIG_FILE = 'config.cfg'
@@ -79,7 +80,7 @@ def read_dictionary_to_csv(csv_file_name):
 
 
 def get_project_path():
-    return Path(os.getcwd()).parent
+    return rootpath.detect()
 
 
 def get_pred_data_path():
